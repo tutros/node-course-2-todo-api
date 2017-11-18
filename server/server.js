@@ -1,15 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+var express = require('express'),
+    bodyParser = require('body-parser');
 
-var { mongoose } = require('./db/mongoose');
-var { Todo } = require('./models/todo');
-var { User } = require('./models/user');
+var { mongoose } = require('./db/mongoose'),
+    { Todo } = require('./models/todo'),
+    { User } = require('./models/user');
 
 var app = express();
 
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
+    console.log('[POST /todos] Received:');
+    console.log(req.body);
     var todo = new Todo({
         text: req.body.text
     });
@@ -18,8 +20,20 @@ app.post('/todos', (req, res) => {
         console.log(`Todo created: ${doc.text}`);
     }, (e) => {
         res.status(400).send(e);
+        console.log(`Error creating todo: ${e}`);
     });
 });
+
+app.get('/todos', (req, res) => {
+    Todo.find().then((todos) => {
+        res.send({todos})
+        console.log(`Todos returned`);
+    }, (e) => {
+        res.status(400).send(e);
+        console.log(`Error getting todo: ${e}`);
+    })
+});
+
 
 app.listen(3000, () => {
     console.log("Started on port 3000");

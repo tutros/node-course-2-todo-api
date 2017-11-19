@@ -7,6 +7,7 @@ var { mongoose } = require('./db/mongoose'),
     { User } = require('./models/user');
 
 var app = express();
+var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -52,29 +53,8 @@ app.get('/todos/:id', (req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log("Started on port 3000");
+app.listen(port, () => {
+    console.log(`Started on port ${port}`);
 });
-
-// Initialize Todo collection with our first todo
-// var newTodo = new Todo({
-//     text: 'Cook dinner'
-// });
-// newTodo.save().then((doc) => {
-//     console.log('Saved todo', doc);
-// }, (e) => {
-//     console.log('Unable to save todo', e)
-// });
-
-// Create a user
-// var newUser = new User({
-//     email: 'tutros@gmail.com'
-// })
-// .save()
-// .then( (doc) => {
-//     console.log('Saved user', doc);
-// }, (e) => {
-//     console.log('Unable to save user', e);
-// });
 
 module.exports = { app };

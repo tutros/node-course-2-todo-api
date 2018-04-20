@@ -101,6 +101,31 @@ app.patch('/todos/:id', (req, res) => {
     })
 });
 
+app.post('/users', (req, res) => {
+    console.log('[POST /users] Received:');
+    console.log(req.body);
+
+    var body =  _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+
+    user.save().then(() => {
+        //res.send(user);
+        return user.generateAuthToken();
+    }).then((token) => {
+        console.log(`User created: ${user.email}`);
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+        console.log(`Error creating user: ${e}`);
+/*
+        console.log(`User created: ${user.email}`);
+    }, (e) => {
+        res.status(400).send(e);
+        console.log(`Error creating user: ${e}`);
+*/
+    });
+});
+
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
 });

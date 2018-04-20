@@ -5,12 +5,13 @@ const _ = require('lodash'),
     bodyParser = require('body-parser'),
     { ObjectID }  = require('mongodb');
 
-const { mongoose } = require('./db/mongoose'),
+var { mongoose } = require('./db/mongoose'),
     { Todo } = require('./models/todo'),
-    { User } = require('./models/user');
+    { User } = require('./models/user'),
+    { authenticate } = require('./middleware/authenticate');
 
 var app = express();
-var port = process.env.PORT;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -117,13 +118,11 @@ app.post('/users', (req, res) => {
     }).catch((e) => {
         res.status(400).send(e);
         console.log(`Error creating user: ${e}`);
-/*
-        console.log(`User created: ${user.email}`);
-    }, (e) => {
-        res.status(400).send(e);
-        console.log(`Error creating user: ${e}`);
-*/
     });
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 app.listen(port, () => {

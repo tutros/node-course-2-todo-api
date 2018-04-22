@@ -54,6 +54,11 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
+/* UserSchema.statics.login = function (email, clearTextPassword) {
+    var User = this;
+
+} */
+
 UserSchema.statics.findByToken = function (token) {
     var User = this;
     var decoded;
@@ -69,6 +74,33 @@ UserSchema.statics.findByToken = function (token) {
         'tokens.token': token,
         'tokens.access': 'auth'
     });
+};
+
+UserSchema.statics.findByCredentials = function (email, password) {
+    var User = this;
+    return User.findOne({email}).then((user) => {
+        if (!user) {
+            return Promise.reject();
+        } 
+
+        return new Promise((resolve, reject) => {
+
+            console.log('User password: ', user.password);
+            bcrypt.compare(password, user.password, (err, res) => {
+                if (err) {
+                    console.log('Error', err);
+                    reject();
+                }
+
+                console.log('Res from compare', res);
+                if (res) {
+                    resolve(user);
+                } else {
+                    reject();
+                }
+            })
+        })
+    })
 };
 
 UserSchema.pre('save', function (next) {

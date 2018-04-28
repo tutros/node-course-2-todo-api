@@ -139,6 +139,28 @@ describe('POST /users/login', () => {
     });
 });
 
+describe('DELETE /users/me/token', () => {
+    it('should delete auth token on logout', (done) => {
+        request(app)
+            .delete('/users/me/token')
+            .set('x-auth', users[0].tokens[0].token)
+            .expect(200)
+            .expect((res) => {
+                expect(res.headers['x-auth']).toNotExist()
+            })
+        .end((err, res) => { // .end makes async assert
+            if (err) {
+                return done(err); 
+            }
+
+            User.findById(users[0]._id).then((user) => {
+                expect(user.tokens.length).toBe(0);
+                done();
+            }).catch((e) => done(e));
+        });
+    });
+});
+
 describe('POST /todos', () => {
     it('should create a new todo', (done) => {
         var text = 'First test todo';
